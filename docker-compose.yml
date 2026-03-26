@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  proxy:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+  ports:
+    - "8080:80"
+  depends_on:
+    api-1:
+      condition: service_healthy
+    api-2:
+      condition: service_healthy
+    api-3:
+      condition: service_healthy
+    frontend:
+      condition: service_healthy
+  volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+  networks:
+    - app-network
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3000"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  api-1:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports: 
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3001/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  api-2:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports: 
+      - "3002:3002"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3002/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  api-3:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports: 
+      - "3003:3003"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3003/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
