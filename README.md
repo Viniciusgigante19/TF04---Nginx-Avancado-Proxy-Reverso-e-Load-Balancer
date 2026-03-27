@@ -39,24 +39,17 @@ git clone https://github.com/Viniciusgigante19/TF04---Nginx-Avancado-Proxy-Rever
 cd TF04---Nginx-Avancado-Proxy-Reverso-e-Load-Balancer
 ```
 
-Gere os certificados SSL:
+Dê permissão para rodar o script:
 
-Escolha o comando ideal para o seu terminal, somente um deles é necessário:
-
-
-```POWERSHELL
-docker run --rm -v "${PWD}/nginx/ssl:/ssl" alpine/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /ssl/key.pem -out /ssl/cert.pem -subj "/CN=localhost"
+```bash
+chmod +x scripts/generate-ssl.sh
 ```
 
-    OU
+Gere os certificados:
 
-```BASH
-MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)/nginx/ssl://ssl" alpine/openssl \
-  req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /ssl/key.pem -out /ssl/cert.pem \
-  -subj "//CN=localhost"
+```bash
+./scripts/generate-ssl.sh
 ```
-
 
 Suba todos os serviços:
 
