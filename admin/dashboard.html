@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header>
+  <h1>⚙️ Admin Dashboard</h1>
+  <p>Monitoramento das instâncias da API</p>
+</header>
+
+<main>
+  <section>
+    <button onclick="checkInstances()">Ver status das instâncias</button>
+    <pre id="output">Clique no botão para carregar informações</pre>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 - E-commerce Load Balanced</p>
+</footer>
+
+<script>
+async function checkInstances() {
+  const output = document.getElementById("output");
+  output.textContent = "Carregando...";
+
+  try {
+    // exemplo de três instâncias da API
+    const instances = ["/api/info", "/api/info", "/api/info"];
+    const results = await Promise.all(instances.map(url =>
+      fetch(url).then(r => r.json())
+    ));
+
+    output.textContent = JSON.stringify(results, null, 2);
+  } catch (err) {
+    output.textContent = "Erro ao carregar instâncias: " + err;
+  }
+}
+</script>
+
+</body>
+</html>
