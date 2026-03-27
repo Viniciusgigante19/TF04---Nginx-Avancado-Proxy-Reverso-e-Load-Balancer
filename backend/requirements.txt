@@ -1,2 +1,2 @@
 uvicorn
-curl
+fastapi
