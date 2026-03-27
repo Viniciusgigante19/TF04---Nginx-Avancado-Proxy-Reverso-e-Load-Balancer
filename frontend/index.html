@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <title>Loja Virtual</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    header { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    nav a { margin-right: 12px; text-decoration: none; color: #333; }
+    .server-info { background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; padding: 16px; margin: 20px 0; }
+    .server-info p { margin: 4px 0; font-size: 0.9rem; }
+    .server-info strong { display: inline-block; width: 140px; }
+    button { margin-top: 10px; padding: 6px 14px; cursor: pointer; }
+    .history { margin-top: 12px; font-size: 0.8rem; color: #555; }
+    footer { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 0.85rem; color: #777; }
+  </style>
 </head>
 <body>
 
@@ -19,11 +30,43 @@
 <main>
   <h2>Bem-vindo!</h2>
   <p>Confira nossos produtos com alta disponibilidade 🚀</p>
+
+  <div class="server-info">
+    <p><strong>Seu IP:</strong> <span id="clientIp">carregando...</span></p>
+    <p><strong>IP do Servidor:</strong> <span id="serverIp">carregando...</span></p>
+    <p><strong>Hostname:</strong> <span id="serverHostname">carregando...</span></p>
+    <button onclick="fetchInfo()">Atualizar</button>
+    <div class="history" id="history"></div>
+  </div>
 </main>
 
 <footer>
   <p>© 2026 - E-commerce Load Balanced</p>
 </footer>
+
+<script>
+  let logs = [];
+
+  async function fetchInfo() {
+    try {
+      const res = await fetch('/api/info');
+      const data = await res.json();
+
+      document.getElementById('clientIp').textContent = data.client_ip || '—';
+      document.getElementById('serverIp').textContent = data.server_ip || '—';
+      document.getElementById('serverHostname').textContent = data.server_hostname || '—';
+
+      const time = new Date().toLocaleTimeString('pt-BR');
+      logs.unshift(`[${time}] ${data.server_hostname} — ${data.server_ip}`);
+      if (logs.length > 5) logs.pop();
+      document.getElementById('history').innerHTML = logs.join('<br>');
+    } catch (e) {
+      document.getElementById('clientIp').textContent = 'erro';
+    }
+  }
+
+  fetchInfo();
+</script>
 
 </body>
 </html>

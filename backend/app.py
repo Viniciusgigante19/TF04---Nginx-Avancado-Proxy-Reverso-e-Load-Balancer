@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
+import socket
 
 app = FastAPI()
 
@@ -21,15 +22,24 @@ products = [
 ]
 next_id = 5
 
+@app.get("/api/info")
+def info(request: Request):
+    return {
+        "client_ip": request.headers.get("x-real-ip", "desconhecido"),
+       "server_ip": socket.gethostbyname(socket.gethostname()),
+        "server_name": request.headers.get("x-server-name", "desconhecido"),
+        "server_hostname": socket.gethostname(),
+    }
+
 @app.get("/health")
 def amIhealth():
     return {"ok": True}
 
-@app.get("/products")
+@app.get("/api/products")
 def get_products():
     return {"products": products}
 
-@app.post("/products")
+@app.post("/api/products")
 def add_products(product: Product):
     global next_id
     product.id = next_id
@@ -37,7 +47,7 @@ def add_products(product: Product):
     products.append(product.dict())
     return {"message": f"Produto {product.name} cadastrado!"}
 
-@app.delete("/products")
+@app.delete("/api/products")
 def remove_products(product: ProductToRemove):
     global products
     products = [p for p in products if p["id"] != product.id]
